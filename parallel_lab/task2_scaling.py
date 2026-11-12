@@ -8,9 +8,9 @@ import time
 from harness import emit_verify_tag, stats_from_samples
 
 STUDENT_SEED = 230103269
-N_STRONG = 1_200_000             # fixed problem size for strong scaling
-N0_WEAK = 200_000                # per-worker load for weak scaling
-SERIAL_FRACTION = 0.05           # Stage A covers the first 5% of elements
+N_STRONG = 1_200_000             
+N0_WEAK = 200_000          
+SERIAL_FRACTION = 0.05           
 WARMUP_RUNS = 1
 TIMED_RUNS = 3
 
