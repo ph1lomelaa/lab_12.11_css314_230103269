@@ -1,0 +1,43 @@
+=== Phase 2: Strong Scaling vs Weak Scaling ===
+P_phys = 10, P_log = 10, P-cores = 4, E-cores = 6
+Stage A: 5% of N, 10 sin/sqrt ops/element, serial in parent
+Stage B: all N elements, 30 FMA/trig ops/element, mp.Pool(p), no shared writes
+p ladder: [1, 2, 4, 5, 8, 10, 11]
+1 warmup + 3 timed runs per point
+
+--- 1. Strong scaling (N = 1,200,000 fixed) ---
+  p       T_ms  StageA_ms     S_p     E_p
+  1      873.9       37.6   1.000   1.000
+  2      456.0       37.3   1.916   0.958
+  4      255.2       37.3   3.424   0.856
+  5      219.9       37.3   3.973   0.795
+  8      295.5       52.7   2.957   0.370
+ 10      240.6       49.9   3.632   0.363
+ 11      214.1       47.5   4.082   0.371
+
+Amdahl serial fraction s = T_StageA(1)/T_1 = 0.0430
+Amdahl ceiling  S_inf = 1/s = 23.27
+
+--- 2. Weak scaling (N_0 = 200,000 per worker) ---
+  p          N       T_ms  StageA_ms   E_weak   alpha   S_gust
+  1    200,000      146.6        6.2    1.000  0.0422    1.000
+  2    400,000      151.6       12.6    0.967  0.0828    1.917
+  4    800,000      215.6       25.0    0.680  0.1160    3.652
+  5  1,000,000      229.2       38.2    0.640  0.1666    4.333
+  8  1,600,000      357.4       59.2    0.410  0.1657    6.840
+ 10  2,000,000      362.2       74.9    0.405  0.2067    8.140
+ 11  2,200,000      490.8       77.8    0.299  0.1585    9.415
+
+--- 3. Architectural inflection (marginal speedup dS/dp) ---
+ p_from  p_to       dS    dS/dp  note
+      1     2    0.916    0.916  
+      2     4    1.508    0.754  
+      4     5    0.549    0.549  <- P-core pool exhausted, E-cores engage
+      5     8   -1.016   -0.339  
+      8    10    0.675    0.338  
+     10    11    0.450    0.450  <- oversubscription past P_log
+
+S_strong(p=10)     = 3.6324  (Amdahl cap 23.27)
+S_Gustafson(p=10)  = 8.1401
+
+VERIFY_HASH[PHASE2]: CE50BCDBD728BCEB (P_log=10)

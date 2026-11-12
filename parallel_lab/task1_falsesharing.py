@@ -11,10 +11,10 @@ from harness import emit_verify_tag, stats_from_samples
 STUDENT_SEED = 230103269
 SHM_BYTES = 4096 
 N_SLOTS = SHM_BYTES // 8          # c_uint64 = 8 bytes -> 4096/8 = 512 slots
-M_TOTAL = 16_000_00              # 1.6e7 total read-modify-write steps
+M_TOTAL = 16_000_000             # 1.6e7 total read-modify-write steps
 STRIDES = (1, 2, 4, 8, 16, 32)
 WARMUP_RUNS = 2
-TIMED_RUNS = 5
+TIMED_RUNS = 7
 
 
 

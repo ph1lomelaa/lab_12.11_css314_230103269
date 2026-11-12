@@ -1,0 +1,36 @@
+=== Phase 1: False Sharing Stride Sweep & Karp-Flatt ===
+P_phys = 10, P_log = 10, M = 1,600,000, shm = 4096 B (512 uint64 slots)
+2 warmup + 5 timed runs per point
+
+requested 4096 B, mapped 16384 B (page-rounded)
+
+--- 1. Stride sweep (p = P_phys = 10) ---
+stride  bytes  median_ms   IQR_ms    Mops/s  vs stride=1
+     1      8     121.28    64.97     13.19        1.00x
+     2     16     104.30    19.64     15.34        1.16x
+     4     32     108.34     9.05     14.77        1.12x
+     8     64      93.62    28.14     17.09        1.30x
+    16    128      95.44    11.97     16.76        1.27x
+    32    256     111.18     3.06     14.39        1.09x
+
+--- 2. Process scaling, stride = 1 (8 B spacing) ---
+  p  median_ms     S_p     E_p     e(p)
+  1     364.39   1.000   1.000      n/a
+  2     180.99   2.013   1.007  -0.0066
+  4     109.14   3.339   0.835   0.0660
+  8      92.17   3.954   0.494   0.1462
+ 10      89.79   4.058   0.406   0.1627
+
+--- 2. Process scaling, stride = 16 (128 B spacing) ---
+  p  median_ms     S_p     E_p     e(p)
+  1     360.13   1.000   1.000      n/a
+  2     186.20   1.934   0.967   0.0341
+  4     129.59   2.779   0.695   0.1465
+  8     102.66   3.508   0.438   0.1829
+ 10      93.70   3.843   0.384   0.1780
+
+median_ms(stride=1)  @ p=10: 121.2828
+median_ms(stride=16) @ p=10: 95.4375
+contention relief factor: 1.27x
+
+VERIFY_HASH[PHASE1]: C223DB8EC02C0AC5 (P_log=10)
