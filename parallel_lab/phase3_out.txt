@@ -1,0 +1,23 @@
+=== Phase 3: Empirical Roofline & Cache-Blocked GEMM ===
+P_phys = 10, P_log = 10, 1 warmup + 3 timed runs
+
+--- 3A. Roofline (p = 10) ---
+copy 2 x 64 MB : median 38.32 ms, IQR 6.48 ms -> BW = 3.34 GB/s
+FMA 6e7/worker : median 3621.71 ms, IQR 1070.52 ms -> P = 0.1657 GFLOP/s
+ridge point I* = P/BW = 0.049597 FLOP/B
+
+--- 3B. GEMM N = 256, p = 10 ---
+     variant  median_ms   IQR_ms   GFLOP/s  W_tile_KB  I_FLOP/B   %roof   max_err
+ 1 naive ijk      762.5    224.1    0.0440          -     0.125   26.6%         -
+       2 ikj      922.0    432.8    0.0364          -     0.125   22.0%         -
+      3 BS=8      744.0     58.4    0.0451        1.5     0.667   27.2%   0.0e+00
+     3 BS=16      807.9    175.6    0.0415        6.0     1.333   25.1%   0.0e+00
+     3 BS=32      759.7    132.6    0.0442       24.0     2.667   26.7%   0.0e+00
+     3 BS=64      674.3    263.4    0.0498       96.0     5.333   30.0%   0.0e+00
+     3 BS=96      963.7    710.2    0.0348      216.0     8.000   21.0%   0.0e+00
+    3 BS=128      880.7    409.9    0.0381      384.0    10.667   23.0%   0.0e+00
+
+BS* = 64 (W_tile = 96.0 KB), GFLOP/s = 0.0498
+V3(BS*)/V1 = 1.13x
+
+VERIFY_HASH[PHASE3]: F96765D84CFE430F (P_log=10)
